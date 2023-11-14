@@ -2,6 +2,7 @@ import os
 from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox as mb
+import tkinter as tk
 import easygui
 import shutil
 import pyotp
@@ -10,7 +11,9 @@ import random
 import smtplib
 from twofish import Twofish
 from tkinter import simpledialog
-file_path=""
+from datetime import datetime
+minutes=0
+new_password=None
 def tfencrypt(infile, outfile, password):
 
     bs = 16 #block size 16 bytes or 128 bits 
@@ -28,6 +31,7 @@ def tfencrypt(infile, outfile, password):
 	    ciphertext += T.encrypt(padded_plaintext[x*bs:(x+1)*bs])
 
     outfile.write(ciphertext)
+    outfile.close()
 
 
 def tfdecrypt(infile, outfile, password):
@@ -41,49 +45,20 @@ def tfdecrypt(infile, outfile, password):
         plaintext += T.decrypt(ciphertext[x*bs:(x+1)*bs])
 
     outfile.write(str.encode(plaintext.decode('utf-8').strip('%'))) #remove padding
+    outfile.close()
 
 
 password = '12345'
 
-with open('infile.txt', 'r') as infile, open('outfile.txt', 'wb') as outfile:
+'''with open('infile.txt', 'r') as infile, open('outfile.txt', 'wb') as outfile:
     tfencrypt(infile, outfile, password)
 
 with open('outfile.txt', 'rb') as infile, open('outfile_decrypted.txt', 'wb') as outfile:
-    tfdecrypt(infile, outfile, password)
+    tfdecrypt(infile, outfile, password)'''
 
-def SaveAs():
-    FileName = filedialog.asksaveasfile(initialdir="/",defaultextension='.txt',filetypes=[("text files",".txt"),("all files",".*")])
-    FileText=str(textspace.get(1.0,END))
-    FileName.write(FileText)
-    Screen.destroy()
-    SaveWindow= Tk()
-    button = Button(text="SaveAs", command=SaveAs)
-    button.pack()
-    textspace = Text(SaveWindow)
-    textspace.pack()
-    tfencrypt(FileName, outfile, password)
+
 def Save():
-    FileName='abc.txt'
-    def SaveAs():
-        FileName = filedialog.asksaveasfile(initialdir="/",defaultextension='.txt',filetypes=[("text files",".txt"),("all files",".*")])
-        FileText=str(textspace.get(1.0,END))
-        FileName.write(FileText)
-    Screen.destroy()
-    SaveWindow= Tk()
-    button = Button(text="SaveAs", command=SaveAs)
-    button.pack()
-    textspace = Text(SaveWindow)
-    textspace.pack()
-    tfencrypt(FileName, outfile, password)
-        # Get the current working directory
-    cwd = os.getcwd()
-
-        # Join the directory path and filename
-       
-    filepath = os.path.join(cwd, FileName)
-
-    print("Filepath:",filepath)
-"""def Save():
+    filename = ""
     def SaveAs():
         FileName = filedialog.asksaveasfile(initialdir="/", defaultextension='.txt', filetypes=[("text files", ".txt"), ("all files", ".*")])
 
@@ -95,13 +70,26 @@ def Save():
             # Get the content from the Text widget and write it to the file
             FileText = str(textspace.get(1.0, END))
             FileName.write(FileText)
-
+            FileName.close()
+            outfilename = filename + '_encr'
+            with open(filename, 'r') as infile, open(outfilename, 'wb') as outfile:
+                tfencrypt(infile, outfile, password)
+            os.remove(filename)
+            os.rename(outfilename,filename)
+            
+        
     Screen.destroy()
     SaveWindow = Tk()
+
     button = Button(text="SaveAs", command=SaveAs)
     button.pack()
     textspace = Text(SaveWindow)
-    textspace.pack()"""
+    textspace.pack()
+    print("The file name is ",filename)
+  
+        #     os.rename("outfile.txt",filename)
+
+
 #opening a file
 '''def Open():  
     Read=easygui.fileopenbox()
@@ -111,7 +99,6 @@ def Save():
         mb.showinfo("file not found")'''
 
 
-# Generate a new OTP secret
 otp_secret = pyotp.random_base32()
 
 # Create an OTP object
@@ -127,7 +114,13 @@ def get_gmail_credentials():
     '''
 def proceed():
     global file_path
-    os.startfile(file_path)
+    outfilename = file_path+"decrypt"
+    with open(file_path, 'rb') as infile, open(outfilename, 'wb') as outfile:
+        tfdecrypt(infile, outfile, password)
+    os.remove(file_path)
+    os.rename(outfilename,file_path)
+    
+    # os.startfile(file_path)
 
 def OTP_Create():
     global file_path
@@ -153,6 +146,7 @@ def OTP_Create():
         if entered_otp == OTP:
             print("Verified")
             proceed_button.pack()
+            os.startfile(file_path)
         else:
             print("Please Check your OTP again")
     
@@ -164,17 +158,153 @@ def OTP_Create():
     verify_button.pack()
     
     proceed_button = Button(otp_window, text="Proceed", command=proceed)
-def Open():
-    global file_path
-    file_path = filedialog.askopenfilename()
-    OTP_Create()
-    '''open_button = Button(otp_window, text="Open File", command=Open)
-    open_button.pack()
+
+def close_file():
+    global file
+    file.close()
+    file_contents_label.config(text="")
+    access_status.set("File Closed")
+
+def save_password():
+    global new_password
+    new_password = new_password_entry.get()
+    confirm_password = confirm_password_entry.get()
+
+    if new_password == confirm_password:
+        # Perform your actions here
+        mb.showinfo("Success", "Passwords matched.")
+        root_password.destroy()
+    else:
+        mb.showerror("Error", "Passwords do not match.")
+
+def create_password(callback):
+    global root_password
+    root_password = tk.Tk()
+    root_password.title("Set Password")
+
+    new_password_label = tk.Label(root_password, text="Enter New Password:")
+    new_password_label.pack()
+
+    global new_password_entry
+    new_password_entry = tk.Entry(root_password, show="*")
+    new_password_entry.pack()
+
+    confirm_password_label = tk.Label(root_password, text="Confirm Password:")
+    confirm_password_label.pack()
+
+    global confirm_password_entry
+    confirm_password_entry = tk.Entry(root_password, show="*")
+    confirm_password_entry.pack()
+
+    submit_button = tk.Button(root_password, text="Set Password", command=save_password)
+    submit_button.pack()
+    callback()
+   
+
+def check_password():
+    global new_password
+    password = simpledialog.askstring("Password", "Enter password:", show='*')
+    if password == new_password:
+        mb.showinfo("Success", "Correct password entered!")
+    else:
+        mb.showerror("Error", "Incorrect password.")
+        
+def check_time():
+    global minutes
+    def check_access():
+        global minutes
+        global file_path
+        current_time = datetime.now().time()
+        start_time = time.ctime()
+        start_time = start_time.strftime("%H:%M")
     
-              
-    excepts            mb.showinfo("File not found")'''
+        end_time = start_time+timedelta(minutes=minutes)
+        #file_path = filedialog.askopenfilename()
+        if start_time <= end_time:
+            access_status.set("Access Granted")
+            p = os.getcwd()
+            file_path = filedialog.askopenfilename()
+            with open(file_path, "r") as f:
+                os.startfile(file_path)
+                window.after((end_time - current_time).seconds * 1000, close_file)
+                
+        else:
+            access_status.set("Access Denied")
+            file_contents_label.config(text="")
+
+    # Create the Tkinter windows
+    window = tk.Tk()
+    window.title("File Access Control")
+
+    # Create labels and entry fields
+    start_time_label = tk.Label(window, text="Start Time (HH:MM):")
+    start_time_label.pack()
+    start_time_entry = tk.Entry(window)
+    start_time_entry.pack()
+
+    end_time_label = tk.Label(window, text="End Time (HH:MM):")
+    end_time_label.pack()
+    end_time_entry = tk.Entry(window)
+    end_time_entry.pack()
+
+    access_button = tk.Button(window, text="Check Access", command=check_access)
+    access_button.pack()
+
+    access_status = tk.StringVar()
+    access_status_label = tk.Label(window, textvariable=access_status)
+    access_status_label.pack()
+
+    file_contents_label = tk.Label(window)
+    file_contents_label.pack()
+def mins():
+    global minutes
+    def get_minutes():
+        global minutes
+        try:
+            minutes = int(entry.get())
+            mb.showinfo("Success", f"Entered minutes: {minutes}")
+        except ValueError:
+            mb.showerror("Error", "Please enter a valid number!")
+
+    root = tk.Tk()
+    root.title("Enter Minutes")
+
+    label = tk.Label(root, text="Enter number of minutes:")
+    label.pack()
+
+    entry = tk.Entry(root)
+    entry.pack()
+
+    button = tk.Button(root, text="Submit", command=get_minutes)
+    button.pack()
+    
     
 
+
+def Open():
+    global file_path
+    folder_path = filedialog.askdirectory()
+    current_directory = os.getcwd()
+    a=current_directory+"\private_folder"
+    b=current_directory+"\time_access"
+    a= a.replace("\\","/")
+    
+    if (folder_path==a):
+        check_password()
+        file_path = filedialog.askopenfilename()
+        
+        OTP_Create()
+        
+    elif(folder_path==b):
+        check_time()
+        
+        
+        
+    else:
+        file_path = filedialog.askopenfilename()
+        os.startfile(file_path)
+        
+        
 #Renaming a file
 def Rename():
     Read=easygui.fileopenbox()
@@ -204,14 +334,73 @@ def DeleteFolder():
     DelFolder = filedialog.askdirectory()
     os.rmdir(DelFolder)
     mb.showinfo("Folder successfully deleted")
-#creating a folder
+import os
+from tkinter import Tk, Label, Entry, Button, filedialog, messagebox as mb
+
+NewFolder = ""
+Folder = ""
+
 def CreateFolder():
+    global NewFolder
+    global Folder
+
+    def save_password():
+        new_password = new_password_entry.get()
+        confirm_password = confirm_password_entry.get()
+
+        if new_password == confirm_password:
+            path = os.path.join(Folder, NewFolder)
+            os.mkdir(path)
+            mb.showinfo("Folder created successfully")
+            root_password.destroy()
+        else:
+            mb.showerror("Error", "Passwords do not match.")
+
     Folder = filedialog.askdirectory()
     print("Enter a name for the folder")
-    NewFolder=input()
-    path = os.path.join(Folder, NewFolder)  
-    os.mkdir(path)
-    mb.showinfo("Folder created successfully")
+    NewFolder = input()
+    def no_action():
+        path = os.path.join(Folder, NewFolder)
+        os.mkdir(path)
+        mb.showinfo("Folder created successfully")
+
+
+    def yes_action():
+        global root_password
+        root_password = Tk()
+        root_password.title("Set Password")
+
+        new_password_label = Label(root_password, text="Enter New Password:")
+        new_password_label.pack()
+
+        global new_password_entry
+        new_password_entry = Entry(root_password, show="*")
+        new_password_entry.pack()
+
+        confirm_password_label = Label(root_password, text="Confirm Password:")
+        confirm_password_label.pack()
+
+        global confirm_password_entry
+        confirm_password_entry = Entry(root_password, show="*")
+        confirm_password_entry.pack()
+
+        submit_button = Button(root_password, text="Set Password", command=save_password)
+        submit_button.pack()
+        
+        
+    root = Tk()
+    root.title("Do you want this to be a private folder?")
+
+    ask_button1 = Button(root, text="Yes", command=yes_action)
+    ask_button2 = Button(root, text="No",command=no_action)
+    ask_button1.pack()
+    ask_button2.pack()
+    # root.destroy()
+    # path = os.path.join(Folder, NewFolder)
+    # os.mkdir(path)
+    # mb.showinfo("Folder created successfully")
+
+
 #Moving the file
 def MoveFile():
     Read=easygui.fileopenbox()
@@ -221,6 +410,27 @@ def MoveFile():
     else:
         shutil.move(Read, Destination)  
         mb.showinfo("File has moved  successfully")
+
+def create_folders():
+    folders = ['private_folder', 'time_access']
+    for folder_name in folders:
+        folder_path = os.path.join(os.getcwd(), folder_name)
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+            
+create_folders()  #to initialise two folders-private & timebased
+current_directory = os.getcwd()
+folder_to_protect = os.path.join(current_directory, "private_folder")
+
+    
+create_password(callback=mins)
+
+
+
+#check_password()
+# Protect the folder
+#protect_folder(folder_to_protect, entered_password)
+root_password.mainloop() 
 #creating buttons and Initializing window
 Screen=Tk()
 Screen.title("File Explorer")
@@ -242,7 +452,4 @@ CreateFolderButton = Button(text="Create Folder",command=CreateFolder)
 CreateFolderButton.place(relx=0.3,rely=0.8)
 MoveFileButton = Button(text="Move File",command=MoveFile)
 MoveFileButton.place(relx=0.5,rely=0.8)
-
-
-
 mainloop()
