@@ -1,0 +1,51 @@
+import tkinter as tk
+from datetime import datetime
+import os
+def close_file():
+    global file
+    file.close()
+    file_contents_label.config(text="")
+    access_status.set("File Closed")
+def check_access():
+    current_time = datetime.now().time()
+    start_time = datetime.strptime(start_time_entry.get(), "%H:%M").time()
+    end_time = datetime.strptime(end_time_entry.get(), "%H:%M").time()
+
+    if start_time <= current_time <= end_time:
+        access_status.set("Access Granted")
+        p = os.getcwd()
+        file_path = os.path.join(p, "infile.txt")
+        with open(file_path, "r") as f:
+            os.startfile(file_path)
+            window.after((end_time - current_time).seconds * 1000, close_file)
+    else:
+        access_status.set("Access Denied")
+        file_contents_label.config(text="")
+
+# Create the Tkinter windows
+window = tk.Tk()
+window.title("File Access Control")
+
+# Create labels and entry fields
+start_time_label = tk.Label(window, text="Start Time (HH:MM):")
+start_time_label.pack()
+start_time_entry = tk.Entry(window)
+start_time_entry.pack()
+
+end_time_label = tk.Label(window, text="End Time (HH:MM):")
+end_time_label.pack()
+end_time_entry = tk.Entry(window)
+end_time_entry.pack()
+
+access_button = tk.Button(window, text="Check Access", command=check_access)
+access_button.pack()
+
+access_status = tk.StringVar()
+access_status_label = tk.Label(window, textvariable=access_status)
+access_status_label.pack()
+
+file_contents_label = tk.Label(window)
+file_contents_label.pack()
+
+# Start the Tkinter event loop
+window.mainloop()
