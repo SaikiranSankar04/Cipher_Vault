@@ -52,38 +52,7 @@ password = '12345'
 with open('outfile.txt', 'rb') as infile, open('outfile_decrypted.txt', 'wb') as outfile:
     tfdecrypt(infile, outfile, password)'''
 
-'''def SaveAs():
-    FileName = filedialog.asksaveasfile(initialdir="/",defaultextension='.txt',filetypes=[("text files",".txt"),("all files",".*")])
-    FileText=str(textspace.get(1.0,END))
-    FileName.write(FileText)
-    Screen.destroy()
-    SaveWindow= Tk()
-    button = Button(text="SaveAs", command=SaveAs)
-    button.pack()
-    textspace = Text(SaveWindow)
-    textspace.pack()
-    tfencrypt(FileName, outfile, password)'''
-'''def Save():
-    FileName='abc.txt'
-    def SaveAs():
-        FileName = filedialog.asksaveasfile(initialdir="/",defaultextension='.txt',filetypes=[("text files",".txt"),("all files",".*")])
-        FileText=str(textspace.get(1.0,END))
-        FileName.write(FileText)
-    Screen.destroy()
-    SaveWindow= Tk()
-    button = Button(text="SaveAs", command=SaveAs)
-    button.pack()
-    textspace = Text(SaveWindow)
-    textspace.pack()
-    tfencrypt(FileName, outfile, password)
-        # Get the current working directory
-    cwd = os.getcwd()
 
-        # Join the directory path and filename
-       
-    filepath = os.path.join(cwd, FileName)
-
-    print("Filepath:",filepath)'''
 def Save():
     filename = ""
     def SaveAs():
@@ -126,7 +95,6 @@ def Save():
         mb.showinfo("file not found")'''
 
 
-# Generate a new OTP secret
 otp_secret = pyotp.random_base32()
 
 # Create an OTP object
@@ -140,8 +108,18 @@ def get_gmail_credentials():
     root.withdraw()  # Hide the main window
 
     '''
-def OTP_Create():
+def proceed():
+    global file_path
+    outfilename = file_path+"decrypt"
+    with open(file_path, 'rb') as infile, open(outfilename, 'wb') as outfile:
+        tfdecrypt(infile, outfile, password)
+    os.remove(file_path)
+    os.rename(outfilename,file_path)
     
+    # os.startfile(file_path)
+
+def OTP_Create():
+    global file_path
     digits="0123456789"
     OTP=""
     for i in range(6):
@@ -155,26 +133,30 @@ def OTP_Create():
     s.sendmail('&&&&&&&&&&&',gmail_username,msg)
     otp_window = Tk()
     otp_window.title("OTP Verification")
+    
+    def verify_otp():
+        global file_path
+        entered_otp = otp_entry.get()
+        print(entered_otp)
+        
+        if entered_otp == OTP:
+            print("Verified")
+            proceed_button.pack()
+        else:
+            print("Please Check your OTP again")
+    
     otp_var = StringVar()
     otp_entry = Entry(otp_window, textvariable=otp_var, show='*')
     otp_entry.pack()
-    entered_otp = otp_entry.get()
-    a=entered_otp
-    if a == OTP:
-        print("Verified")
-        os.startfile(file_path)
-    else:
-        print("Please Check your OTP again")
+    
+    verify_button = Button(otp_window, text="Verify OTP", command=verify_otp)
+    verify_button.pack()
+    
+    proceed_button = Button(otp_window, text="Proceed", command=proceed)
 def Open():
-    file_path = easygui.fileopenbox()
+    global file_path
+    file_path = filedialog.askopenfilename()
     OTP_Create()
-    '''open_button = Button(otp_window, text="Open File", command=Open)
-    open_button.pack()
-    
-              
-    excepts            mb.showinfo("File not found")'''
-    
-
 #Renaming a file
 def Rename():
     Read=easygui.fileopenbox()
@@ -204,109 +186,73 @@ def DeleteFolder():
     DelFolder = filedialog.askdirectory()
     os.rmdir(DelFolder)
     mb.showinfo("Folder successfully deleted")
-#creating a folder
+import os
+from tkinter import Tk, Label, Entry, Button, filedialog, messagebox as mb
+
+NewFolder = ""
+Folder = ""
+
 def CreateFolder():
+    global NewFolder
+    global Folder
+
+    def save_password():
+        new_password = new_password_entry.get()
+        confirm_password = confirm_password_entry.get()
+
+        if new_password == confirm_password:
+            path = os.path.join(Folder, NewFolder)
+            os.mkdir(path)
+            mb.showinfo("Folder created successfully")
+            root_password.destroy()
+        else:
+            mb.showerror("Error", "Passwords do not match.")
 
     Folder = filedialog.askdirectory()
     print("Enter a name for the folder")
-    NewFolder=input()
-    # path = os.path.join(Folder, NewFolder)  
+    NewFolder = input()
+    def no_action():
+        path = os.path.join(Folder, NewFolder)
+        os.mkdir(path)
+        mb.showinfo("Folder created successfully")
+
+
+    def yes_action():
+        global root_password
+        root_password = Tk()
+        root_password.title("Set Password")
+
+        new_password_label = Label(root_password, text="Enter New Password:")
+        new_password_label.pack()
+
+        global new_password_entry
+        new_password_entry = Entry(root_password, show="*")
+        new_password_entry.pack()
+
+        confirm_password_label = Label(root_password, text="Confirm Password:")
+        confirm_password_label.pack()
+
+        global confirm_password_entry
+        confirm_password_entry = Entry(root_password, show="*")
+        confirm_password_entry.pack()
+
+        submit_button = Button(root_password, text="Set Password", command=save_password)
+        submit_button.pack()
+        
+        
+    root = Tk()
+    root.title("Do you want this to be a private folder?")
+
+    ask_button1 = Button(root, text="Yes", command=yes_action)
+    ask_button2 = Button(root, text="No",command=no_action)
+    ask_button1.pack()
+    ask_button2.pack()
+    # root.destroy()
+    # path = os.path.join(Folder, NewFolder)
     # os.mkdir(path)
     # mb.showinfo("Folder created successfully")
 
-    def ask_yes_no():
-        answer = messagebox.askquestion("Do you want to make this a private folder?")
-        root = tkinter.Tk()
-        root.title("Private folder")
-        
-        if answer == 'yes':
-            # print("Proceeding...")
-            def save_password():
-                new_password = new_password_entry.get()
-                confirm_password = confirm_password_entry.get()
-            
-                if new_password == confirm_password:
-                    # Save the new password (for demonstration purposes, it's stored in a variable)
-                    global saved_password
-                    saved_password = new_password
-            
-                    mb.showinfo("Success", "Password updated!")
-                    root.destroy()  # Close the window after setting the password
-                else:
-                    mb.showerror("Error", "Passwords do not match. Please try again.")
 
-            def set_password():
-                global root
-                root = tkinter.Tk()
-                root.title("Set New Password")
-
-                new_password_label = tkinter.Label(root, text="Enter New Password:")
-                new_password_label.pack()
-
-                new_password_entry = tkinter.Entry(root, show="*")
-                new_password_entry.pack()
-
-                confirm_password_label = tkinter.Label(root, text="Confirm Password:")
-                confirm_password_label.pack()
-
-                confirm_password_entry = tkinter.Entry(root, show="*")
-                confirm_password_entry.pack()
-
-                submit_button = tkinter.Button(root, text="Set Password", command=save_password)
-                submit_button.pack()
-    ask_button = tkinter.Button(root, text="Ask Yes/No", command=ask_yes_no)
-    ask_button.pack()
-
-    # else:
-    #     print("Action canceled.")
-
-    # root = tk.Tk()
-    # root.title("Private folder")
-
-    
-
-    '''def save_password():
-    new_password = new_password_entry.get()
-    confirm_password = confirm_password_entry.get()
-    
-    if new_password == confirm_password:
-        # Save the new password (for demonstration purposes, it's stored in a variable)
-        global saved_password
-        saved_password = new_password
-        
-        messagebox.showinfo("Success", "Password updated!")
-        root.destroy()  # Close the window after setting the password
-    else:
-        messagebox.showerror("Error", "Passwords do not match. Please try again.")
-
-def set_password():
-    global root
-    root = tk.Tk()
-    root.title("Set New Password")
-
-    new_password_label = tk.Label(root, text="Enter New Password:")
-    new_password_label.pack()
-
-    new_password_entry = tk.Entry(root, show="*")
-    new_password_entry.pack()
-
-    confirm_password_label = tk.Label(root, text="Confirm Password:")
-    confirm_password_label.pack()
-
-    confirm_password_entry = tk.Entry(root, show="*")
-    confirm_password_entry.pack()
-
-    submit_button = tk.Button(root, text="Set Password", command=save_password)
-    submit_button.pack()
-
-    root.mainloop()'''
-
-# Call the function to set a new password
-    set_password()
-
-    path = os.path.join(Folder, NewFolder)  
-    os.mkdir(path)
-    mb.showinfo("Folder created successfully")
 #Moving the file
 def MoveFile():
     Read=easygui.fileopenbox()
