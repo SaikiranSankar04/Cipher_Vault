@@ -119,17 +119,18 @@ def get_gmail_credentials():
 def proceed():
     global file_path
     global new_password
-    password = get_password()
+    password = onetime_get_password()
     print("password:",password)
     print("new:",new_password)
     if(password ==new_password):
         outfilename = file_path+"decrypt"
+        
         with open(file_path, 'rb') as infile, open(outfilename, 'wb') as outfile:
-            tfdecrypt(infile, outfile, folder_password)
+            tfdecrypt(infile, outfile, new_password)
         os.remove(file_path)
         os.rename(outfilename,file_path)
         print("decrypted")
-        os.startfile(outfilename)
+        os.startfile(file_path)
     
     # os.startfile(file_path)
 
@@ -157,7 +158,8 @@ def OTP_Create():
         if entered_otp == OTP:
             print("Verified")
             proceed_button.pack()
-            os.startfile(file_path)
+            proceed()         
+  #          os.startfile(file_path)
         else:
             print("Please Check your OTP again")
     
@@ -187,64 +189,77 @@ def save_password():
         root_password.destroy()
     else:
         mb.showerror("Error", "Passwords do not match.")
-def save_password_folder():
-    global new_password_folder
-    new_password_folder= new_password_entry.get()
-    confirm_password = confirm_password_entry.get()
-    print("new password folder:",new_password_folder)
-    print("confirm :", confirm_password)
-    if new_password_folder== confirm_password:
+def save_pw_folder():
+    global new_pw_folder
+    new_pw_folder = new_pw_entry.get()
+    confirm_pw = confirm_pw_entry.get()
+    print("new password folder:", new_pw_folder)
+    print("confirm :", confirm_pw)
+    if new_pw_folder == confirm_pw:
         # Perform your actions here
         mb.showinfo("Success", "Passwords matched.")
-        folder_password.destroy()
+        folder_pw.destroy()
     else:
         mb.showerror("Error", "Passwords do not match.")
-def create_password_folder():
-    global folder_password
-    folder_password = tk.Tk()
-    folder_password.title("Private Folder")
 
-    new_password_label = tk.Label(folder_password, text="Enter New Password:")
-    new_password_label.pack()
+def create_pw_folder():
+    global folder_pw
+    folder_pw = Tk()
+    folder_pw.title("Private Folder")
 
-    global new_password_entry
-    new_password_entry = tk.Entry(folder_password, show="*")
-    new_password_entry.pack()
+    new_pw_label = Label(folder_pw, text="Enter New Password:")
+    new_pw_label.pack()
 
-    confirm_password_label = tk.Label(folder_password, text="Confirm Password:")
-    confirm_password_label.pack()
+    global new_pw_entry
+    new_pw_entry = Entry(folder_pw, show="*")
+    new_pw_entry.pack()
 
-    global confirm_password_entry
-    confirm_password_entry = tk.Entry(folder_password, show="*")
-    confirm_password_entry.pack()
+    confirm_pw_label = Label(folder_pw, text="Confirm Password:")
+    confirm_pw_label.pack()
 
-    submit_button = tk.Button(folder_password, text="Set Password", command=save_password_folder)
+    global confirm_pw_entry
+    confirm_pw_entry = Entry(folder_pw, show="*")
+    confirm_pw_entry.pack()
+
+    submit_button = Button(folder_pw, text="Set Password", command=save_pw_folder)
     submit_button.pack()
-    
-   
+    folder_pw.mainloop()
+def save_password():
+    global new_password,root_password
+    new_password = new_password_entry.get()
+    confirm_password = confirm_password_entry.get()
+
+    if new_password == confirm_password:
+        mb.showinfo("Success", "Password saved: " + new_password)
+        root_password.destroy()
+    else:
+        mb.showerror("Error", "Passwords do not match.")   
 def create_password_encrypt():
-    global root_password
-    root_password = tk.Tk()
-    root_password.title("Password for encrypting your files:")
-
-    new_password_label = tk.Label(root_password, text="Enter New Password:")
-    new_password_label.pack()
-
-    global new_password_entry
-    new_password_entry = tk.Entry(root_password, show="*")
-    new_password_entry.pack()
-
-    confirm_password_label = tk.Label(root_password, text="Confirm Password:")
-    confirm_password_label.pack()
-
-    global confirm_password_entry
-    confirm_password_entry = tk.Entry(root_password, show="*")
-    confirm_password_entry.pack()
-
-    submit_button = tk.Button(root_password, text="Set Password", command=save_password)
-    submit_button.pack()
     
-   
+
+    def get_password():
+        global new_password_entry, confirm_password_entry, root_password
+        root_password = tk.Tk()
+        root_password.title("Password Entry")
+
+            # Labels and Entry widgets for new and confirm passwords
+        new_password_label = tk.Label(root_password, text="New Password:")
+        new_password_label.grid(row=0, column=0)
+        new_password_entry = tk.Entry(root_password, show='*')
+        new_password_entry.grid(row=0, column=1)
+
+        confirm_password_label = tk.Label(root_password, text="Confirm Password:")
+        confirm_password_label.grid(row=1, column=0)
+        confirm_password_entry = tk.Entry(root_password, show='*')
+        confirm_password_entry.grid(row=1, column=1)
+
+            # Button to save passwords
+        save_button = tk.Button(root_password, text="Save", command=save_password)
+        save_button.grid(row=2, columnspan=2)
+        root_password.mainloop()
+        
+    get_password()     
+       
 def check_password():
     global new_password
     password = simpledialog.askstring("Password", "Enter password:", show='*')
@@ -263,7 +278,7 @@ def check_password():
         mb.showerror("Error", "Incorrect password.")
         return False'''
 
-def get_password():
+def onetime_get_password():
     root = tk.Tk()
     root.withdraw()
     password = simpledialog.askstring("Password", "Enter the decryption password:", show='*')
@@ -418,17 +433,7 @@ def CreateFolder():
     global NewFolder
     global Folder
 
-    def save_password():
-        new_password = new_password_entry.get()
-        confirm_password = confirm_password_entry.get()
-
-        if new_password == confirm_password:
-            path = os.path.join(Folder, NewFolder)
-            os.mkdir(path)
-            mb.showinfo("Folder created successfully")
-            root_password.destroy()
-        else:
-            mb.showerror("Error", "Passwords do not match.")
+    save_pw_folder()
 
     Folder = filedialog.askdirectory()
     print("Enter a name for the folder")
@@ -461,18 +466,7 @@ def CreateFolder():
         submit_button = Button(root_password, text="Set Password", command=save_password)
         submit_button.pack()
         
-        
-    root = Tk()
-    root.title("Do you want this to be a private folder?")
 
-    ask_button1 = Button(root, text="Yes", command=yes_action)
-    ask_button2 = Button(root, text="No",command=no_action)
-    ask_button1.pack()
-    ask_button2.pack()
-    # root.destroy()
-    # path = os.path.join(Folder, NewFolder)
-    # os.mkdir(path)
-    # mb.showinfo("Folder created successfully")
 
 
 #Moving the file
@@ -496,14 +490,14 @@ create_folders()  #to initialise two folders-private & timebased
 current_directory = os.getcwd()
 folder_to_protect = os.path.join(current_directory, "private_folder")
 create_password_encrypt()
-create_password_folder()
+#create_pw_folder()
 mins()
 
-
+create_pw_folder()
 #check_password()
 # Protect the folder
 #protect_folder(folder_to_protect, entered_password)
-root_password.mainloop() 
+#root_password.mainloop() 
 #creating buttons and Initializing window
 Screen=Tk()
 Screen.title("File Explorer")
@@ -525,4 +519,4 @@ CreateFolderButton = Button(text="Create Folder",command=CreateFolder)
 CreateFolderButton.place(relx=0.3,rely=0.8)
 MoveFileButton = Button(text="Move File",command=MoveFile)
 MoveFileButton.place(relx=0.5,rely=0.8)
-mainloop()
+Screen.mainloop()
