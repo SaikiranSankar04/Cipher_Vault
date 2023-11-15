@@ -82,7 +82,7 @@ def Save():
             os.rename(outfilename,filename)
             
         
-    Screen.destroy()
+    
     SaveWindow = Tk()
 
     button = Button(text="SaveAs", command=SaveAs)
@@ -129,9 +129,9 @@ def proceed():
             tfdecrypt(infile, outfile, new_password)
         os.remove(file_path)
         os.rename(outfilename,file_path)
-        print("decrypted")
+        
         os.startfile(file_path)
-    
+    return
     # os.startfile(file_path)
 
 def OTP_Create():
@@ -287,40 +287,59 @@ def onetime_get_password():
 # Example usage:
 # password = get_password()
    
-def check_time():
+
+
+# Create the main Tkinter window with a different variable name
+
+
+def update_countdown(remaining_time, label):
+    if remaining_time > 0:
+        minutes, seconds = divmod(remaining_time, 60)
+        hours, minutes = divmod(minutes, 60)
+        label.config(text=f"Time Remaining: {hours:02d}:{minutes:02d}:{seconds:02d}")
+        main_window.after(1000, update_countdown, remaining_time - 1, label)
+
+def check_access():
+    
     global minutes
     global file_path
-    def check_access():
-        global minutes
-        global file_path
-        current_time = datetime.now().time()
-        start_time = time.ctime()
-        start_time = start_time.strftime("%H:%M")
-    
-        end_time = start_time+timedelta(minutes=minutes)
-        #file_path = filedialog.askopenfilename()
-        if start_time <= end_time:
-            access_status.set("Access Granted")
-            p = os.getcwd()
-            file_path = filedialog.askopenfilename()
-    
+    main_window = Tk()
+    current_time = datetime.now().time()
+    start_time = datetime.now().strftime("%H:%M")
+
+    end_time = (datetime.strptime(start_time, "%H:%M") + timedelta(minutes=minutes)).strftime("%H:%M")
+
+    if start_time <= end_time:
+        access_status.set("Access Granted")
+        file_path = filedialog.askopenfilename()
+        proceed()
+
+        # Create and place the countdown label
+        countdown_label = Label(main_window, text="Time Remaining: 00:00:00")
+        countdown_label.place(relx=0.3, rely=0.9)
+
+        # Calculate remaining time and start countdown
+        remaining_time = (datetime.strptime(end_time, "%H:%M") - datetime.strptime(start_time, "%H:%M")).seconds
+        update_countdown(remaining_time, countdown_label)
+        print(remaining_time)
+        # Wait for some time (simulate a delay)
+        time.sleep(minutes * 60)
+
+        # Close Notepad or perform other actions after time expires
+        os.system("taskkill /im notepad.exe /f")
+        countdown_label.config(text="Time's Up!")  # Display 'Time's Up!' after file access time is over
+    else:
+        access_status.set("Access Denied")
+        file_contents_label.config(text="")
+
+# ... rest of your code where the check_access() function is called or utilized
+
+    main_window.mainloop()  # Start the main Tkinter event loop
+
+
        
-    # Open the file with Notepad
-            #os.system(f"start notepad {file_path}")
-            proceed()
-    # Wait for some time (simulate a delay)
     
-            time.sleep(minutes*60)
-
-    # Close Notepad
-            os.system("taskkill /im notepad.exe /f")
-            #print("Done")
-                
-        else:
-            access_status.set("Access Denied")
-            file_contents_label.config(text="")
-
-    # Create the Tkinter windows
+''' # Create the Tkinter windows
     window = tk.Tk()
     window.title("File Access Control")
 
@@ -343,7 +362,7 @@ def check_time():
     access_status_label.pack()
 
     file_contents_label = tk.Label(window)
-    file_contents_label.pack()
+    file_contents_label.pack()'''
 def mins():
     global minutes
     def get_minutes():
@@ -384,7 +403,7 @@ def Open():
         OTP_Create()
         
     elif(folder_path==b):
-        check_time()
+        check_access()
         
         
         
@@ -499,6 +518,11 @@ create_pw_folder()
 #protect_folder(folder_to_protect, entered_password)
 #root_password.mainloop() 
 #creating buttons and Initializing window
+def on_closing():
+    # Perform any cleanup actions here before closing the window
+    # Optionally ask for confirmation before closing
+    if mb.askokcancel("Quit", "Do you want to quit?"):
+        Screen.destroy()
 Screen=Tk()
 Screen.title("File Explorer")
 Screen.geometry("500x500")
@@ -519,4 +543,5 @@ CreateFolderButton = Button(text="Create Folder",command=CreateFolder)
 CreateFolderButton.place(relx=0.3,rely=0.8)
 MoveFileButton = Button(text="Move File",command=MoveFile)
 MoveFileButton.place(relx=0.5,rely=0.8)
+Screen.protocol("WM_DELETE_WINDOW", on_closing)  
 Screen.mainloop()
