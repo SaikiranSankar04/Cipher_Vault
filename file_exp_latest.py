@@ -287,55 +287,105 @@ def onetime_get_password():
 # Example usage:
 # password = get_password()
    
+'''
 
-
-# Create the main Tkinter window with a different variable name
-
-
-def update_countdown(remaining_time, label):
-    if remaining_time > 0:
-        minutes, seconds = divmod(remaining_time, 60)
-        hours, minutes = divmod(minutes, 60)
-        label.config(text=f"Time Remaining: {hours:02d}:{minutes:02d}:{seconds:02d}")
-        main_window.after(1000, update_countdown, remaining_time - 1, label)
-
-def check_access():
-    
+def check_timer():
     global minutes
-    global file_path
+
+    # Create the main Tkinter window with a different variable name
     main_window = Tk()
-    current_time = datetime.now().time()
-    start_time = datetime.now().strftime("%H:%M")
 
-    end_time = (datetime.strptime(start_time, "%H:%M") + timedelta(minutes=minutes)).strftime("%H:%M")
+    def update_countdown(remaining_time, label):
+        global minutes
+        if remaining_time > 0:
+            minutes, seconds = divmod(remaining_time, 60)
+            hours, minutes = divmod(minutes, 60)
+            label.config(text=f"Time Remaining: {hours:02d}:{minutes:02d}:{seconds:02d}")
+            main_window.after(1000, update_countdown, remaining_time - 1, label)
 
-    if start_time <= end_time:
-        access_status.set("Access Granted")
-        file_path = filedialog.askopenfilename()
-        proceed()
+    def check_access():
+        global minutes
+        global file_path
+        current_time = datetime.now().time()
+        start_time = datetime.now().strftime("%H:%M")
 
-        # Create and place the countdown label
-        countdown_label = Label(main_window, text="Time Remaining: 00:00:00")
-        countdown_label.place(relx=0.3, rely=0.9)
+        end_time = (datetime.strptime(start_time, "%H:%M") + timedelta(minutes=minutes)).strftime("%H:%M")
 
-        # Calculate remaining time and start countdown
-        remaining_time = (datetime.strptime(end_time, "%H:%M") - datetime.strptime(start_time, "%H:%M")).seconds
-        update_countdown(remaining_time, countdown_label)
-        print(remaining_time)
-        # Wait for some time (simulate a delay)
-        time.sleep(minutes * 60)
+        if start_time <= end_time:
+            access_status.set("Access Granted")
+            file_path = filedialog.askopenfilename()
+            proceed()
 
-        # Close Notepad or perform other actions after time expires
-        os.system("taskkill /im notepad.exe /f")
-        countdown_label.config(text="Time's Up!")  # Display 'Time's Up!' after file access time is over
-    else:
-        access_status.set("Access Denied")
-        file_contents_label.config(text="")
+            # Create and place the countdown label
+            countdown_label = Label(main_window, text="Time Remaining: 00:00:00")
+            countdown_label.place(relx=0.3, rely=0.9)
 
-# ... rest of your code where the check_access() function is called or utilized
+            # Calculate remaining time and start countdown
+            remaining_time = (datetime.strptime(end_time, "%H:%M") - datetime.strptime(start_time, "%H:%M")).seconds
+            update_countdown(remaining_time, countdown_label)
 
+            # Wait for some time (simulate a delay)
+            time.sleep(minutes * 60)
+
+            # Close Notepad or perform other actions after time expires
+            os.system("taskkill /im notepad.exe /f")
+            countdown_label.config(text="Time's Up!")  # Display 'Time's Up!' after file access time is over
+        else:
+            access_status.set("Access Denied")
+            file_contents_label.config(text="")
+
+    # ... rest of your code where the check_access() function is called or utilized
+
+        main_window.mainloop()  # Start the main Tkinter event loop
+
+
+'''
+
+def check_timer():
+    # Create the main Tkinter window with a different variable name
+    main_window = Tk()
+    global minutes
+    def update_countdown(remaining_time, label):
+        global minutes
+        if remaining_time > 0:
+            minutes, seconds = divmod(remaining_time, 60)
+            hours, minutes = divmod(minutes, 60)
+            label.config(text=f"Time Remaining: {hours:02d}:{minutes:02d}:{seconds:02d}")
+            main_window.after(1000, update_countdown, remaining_time - 1, label)
+
+    def check_access():
+        global minutes
+        global file_path
+        current_time = datetime.now().time()
+        start_time = datetime.now().strftime("%H:%M")
+
+        end_time = (datetime.strptime(start_time, "%H:%M") + timedelta(minutes=minutes)).strftime("%H:%M")
+
+        if start_time <= end_time:
+            access_status.set("Access Granted")
+            file_path = filedialog.askopenfilename()
+            proceed()
+
+            # Create and place the countdown label
+            countdown_label = Label(main_window, text="Time Remaining: 00:00:00")
+            countdown_label.place(relx=0.3, rely=0.9)
+
+            # Calculate remaining time and start countdown
+            remaining_time = (datetime.strptime(end_time, "%H:%M") - datetime.strptime(start_time, "%H:%M")).seconds
+            update_countdown(remaining_time, countdown_label)
+
+            # Close Notepad or perform other actions after time expires
+            pid = os.spawnlp(os.P_NOWAIT, 'notepad', 'notepad', file_path)
+            os.system('taskkill /f /pid {}'.format(pid))
+            
+            countdown_label.config(text="Time's Up!")  # Display 'Time's Up!' after file access time is over
+        else:
+            access_status.set("Access Denied")
+            file_contents_label.config(text="")
+
+    # ... rest of your code where the check_access() function is called or utilized
+    check_access()
     main_window.mainloop()  # Start the main Tkinter event loop
-
 
        
     
@@ -403,7 +453,7 @@ def Open():
         OTP_Create()
         
     elif(folder_path==b):
-        check_access()
+        check_timer()
         
         
         
