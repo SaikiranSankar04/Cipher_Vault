@@ -11,7 +11,7 @@ import random
 import smtplib
 from twofish import Twofish
 from tkinter import simpledialog
-from datetime import datetime,timedelta
+from datetime import datetime
 import subprocess
 import signal
 minutes=0
@@ -63,6 +63,7 @@ with open('outfile.txt', 'rb') as infile, open('outfile_decrypted.txt', 'wb') as
 
 def Save():
     filename = ""
+    SaveWindow = tk.Tk()
     def SaveAs():
         FileName = filedialog.asksaveasfile(initialdir="/", defaultextension='.txt', filetypes=[("text files", ".txt"), ("all files", ".*")])
 
@@ -83,11 +84,12 @@ def Save():
             
         
     
-    SaveWindow = Tk()
+        
+    
 
-    button = Button(text="SaveAs", command=SaveAs)
+    button = tk.Button(SaveWindow,text="SaveAs", command=SaveAs)
     button.pack()
-    textspace = Text(SaveWindow)
+    textspace = tk.Text(SaveWindow)
     textspace.pack()
     print("The file name is ",filename)
   
@@ -120,42 +122,6 @@ def proceed():
     global file_path
     global new_password
     password = onetime_get_password()
-    if(password ==new_password):
-        outfilename = file_path+"decrypt"
-        
-        with open(file_path, 'rb') as infile, open(outfilename, 'wb') as outfile:
-            tfdecrypt(infile, outfile, new_password)
-        os.remove(file_path)
-        os.rename(outfilename,file_path)
-        
-        os.startfile(file_path)
-    return
-    # os.startfile(file_path)
-def cl_up(process):
-    global file_path,minutes
-    start = time.time()
-    TIME_TO_WAIT = minutes
-    process = subprocess.Popen(["notepad", file_path])
-
-    while True:
-        elapsed_time = time.time()- start
-
-        if elapsed_time >= TIME_TO_WAIT:
-        # If the elapsed time is greater than or equal to the time to wait
-            cleanup(process)
-            process.terminate()  # Terminate the process gracefully
-            process.wait()       # Wait for the process to finish
-            break
-    time.sleep(1)
-    def cleanup(process):
-        pass
-
-''' # Your main program logic can go here
-
-    time.sleep(1) 
-    global file_path
-    global new_password
-    password = onetime_get_password()
     print("password:",password)
     print("new:",new_password)
     if(password ==new_password):
@@ -167,9 +133,9 @@ def cl_up(process):
         os.rename(outfilename,file_path)
         
         os.startfile(file_path)
-        
-        process.terminate() 
-    return'''
+    return
+    # os.startfile(file_path)
+
 def OTP_Create():
     global file_path
     digits="0123456789"
@@ -266,7 +232,7 @@ def save_password():
     confirm_password = confirm_password_entry.get()
 
     if new_password == confirm_password:
-        mb.showinfo("Success", "Password saved: " + new_password)
+        mb.showinfo("Success")
         root_password.destroy()
     else:
         mb.showerror("Error", "Passwords do not match.")   
@@ -276,7 +242,7 @@ def create_password_encrypt():
     def get_password():
         global new_password_entry, confirm_password_entry, root_password
         root_password = tk.Tk()
-        root_password.title("Password Entry")
+        root_password.title("Set Password for encrypting your files:")
 
             # Labels and Entry widgets for new and confirm passwords
         new_password_label = tk.Label(root_password, text="New Password:")
@@ -323,7 +289,10 @@ def onetime_get_password():
 # Example usage:
 # password = get_password()
    
-'''
+
+
+# Create the main Tkinter window with a different variable name
+
 
 def check_timer():
     global minutes
@@ -375,24 +344,6 @@ def check_timer():
         main_window.mainloop()  # Start the main Tkinter event loop
 
 
-'''
-'''def cleanup():
-    global file_path
-    while True:
-        start = start_time
-        TIME_TO_WAIT = minutes*60
-        elapsed_time = time.time() - start
-
-        if elapsed_time >= TIME_TO_WAIT:
-                   
-        process.terminate()  # Terminate the process gracefully
-        process.wait()       # Wait for the process to finish
-        break
-
-                # Your main program logic can go here
-
-        time.sleep(1)
-'''
 
 
 
@@ -446,32 +397,8 @@ def check_timer():
     main_window.mainloop()
 
 
-'''
+
     
-# Create the Tkinter windows
-    window = tk.Tk()
-    window.title("File Access Control")
-
-    # Create labels and entry fields
-    start_time_label = tk.Label(window, text="Start Time (HH:MM):")
-    start_time_label.pack()
-    start_time_entry = tk.Entry(window)
-    start_time_entry.pack()
-
-    end_time_label = tk.Label(window, text="End Time (HH:MM):")
-    end_time_label.pack()
-    end_time_entry = tk.Entry(window)
-    end_time_entry.pack()
-
-    access_button = tk.Button(window, text="Check Access", command=check_access)
-    access_button.pack()
-
-    access_status = tk.StringVar()
-    access_status_label = tk.Label(window, textvariable=access_status)
-    access_status_label.pack()
-
-    file_contents_label = tk.Label(window)
-    file_contents_label.pack()'''
 def mins():
     global minutes
     def get_minutes():
@@ -479,6 +406,7 @@ def mins():
         try:
             minutes = int(entry.get())
             mb.showinfo("Success", f"Entered minutes: {minutes}")
+            root.destroy()
         except ValueError:
             mb.showerror("Error", "Please enter a valid number!")
 
@@ -493,6 +421,7 @@ def mins():
 
     button = tk.Button(root, text="Submit", command=get_minutes)
     button.pack()
+    root.mainloop()
     
     
 
@@ -502,11 +431,9 @@ def Open():
     folder_path = filedialog.askdirectory()
     current_directory = os.getcwd()
     a=current_directory+"\private_folder"
-    b=current_directory+"\\time_access"
+    b=current_directory+"\time_access"
     a= a.replace("\\","/")
-    b=b.replace("\\","/")
-    print(folder_path)
-    print("B",b)
+    
     if (folder_path==a):
         check_password()
         file_path = filedialog.askopenfilename()
@@ -514,8 +441,7 @@ def Open():
         OTP_Create()
         
     elif(folder_path==b):
-        print("in elif")
-        check_timer()
+        check_access()
         
         
         
@@ -621,10 +547,9 @@ create_folders()  #to initialise two folders-private & timebased
 current_directory = os.getcwd()
 folder_to_protect = os.path.join(current_directory, "private_folder")
 create_password_encrypt()
-#create_pw_folder()
-mins()
-
 create_pw_folder()
+mins()
+# create_pw_folder()
 #check_password()
 # Protect the folder
 #protect_folder(folder_to_protect, entered_password)
@@ -635,25 +560,52 @@ def on_closing():
     # Optionally ask for confirmation before closing
     if mb.askokcancel("Quit", "Do you want to quit?"):
         Screen.destroy()
-Screen=Tk()
+#check_password()
+# Protect the folder
+#protect_folder(folder_to_protect, entered_password)
+#root_password.mainloop() 
+#creating buttons and Initializing window
+# Screen=Tk()
+# Screen.title("File Explorer")
+# Screen.geometry("500x500")
+# Screen.config(bg="pink")
+# SaveButton = Button(text="Save",command=Save)
+# SaveButton.place(relx=0.3,rely=0.2)
+# OpenButton = Button(text="Open",command=Open)
+# OpenButton.place(relx=0.5,rely=0.2)
+# RenameButton = Button(text="Rename",command=Rename)
+# RenameButton.place(relx=0.3,rely=0.4)
+# CopyButton = Button(text="Copy",command=Copy)
+# CopyButton.place(relx=0.5,rely=0.4)
+# DeleteButton = Button(text="Delete File",command=Delete)
+# DeleteButton.place(relx=0.3,rely=0.6)
+# DeleteFolderButton = Button(text="Delete Folder",command=DeleteFolder)
+# DeleteFolderButton.place(relx=0.5,rely=0.6)
+# CreateFolderButton = Button(text="Create Folder",command=CreateFolder)
+# CreateFolderButton.place(relx=0.3,rely=0.8)
+# MoveFileButton = Button(text="Move File",command=MoveFile)
+# MoveFileButton.place(relx=0.5,rely=0.8)
+Screen = Tk()
 Screen.title("File Explorer")
-Screen.geometry("500x500")
-Screen.config(bg="pink")
-SaveButton = Button(text="Save",command=Save)
-SaveButton.place(relx=0.3,rely=0.2)
-OpenButton = Button(text="Open",command=Open)
-OpenButton.place(relx=0.5,rely=0.2)
-RenameButton = Button(text="Rename",command=Rename)
-RenameButton.place(relx=0.3,rely=0.4)
-CopyButton = Button(text="Copy",command=Copy)
-CopyButton.place(relx=0.5,rely=0.4)
-DeleteButton = Button(text="Delete File",command=Delete)
-DeleteButton.place(relx=0.3,rely=0.6)
-DeleteFolderButton = Button(text="Delete Folder",command=DeleteFolder)
-DeleteFolderButton.place(relx=0.5,rely=0.6)
-CreateFolderButton = Button(text="Create Folder",command=CreateFolder)
-CreateFolderButton.place(relx=0.3,rely=0.8)
-MoveFileButton = Button(text="Move File",command=MoveFile)
-MoveFileButton.place(relx=0.5,rely=0.8)
-Screen.protocol("WM_DELETE_WINDOW", on_closing)  
+
+# Create a frame for the buttons
+button_frame = Frame(Screen, bg="pink")
+button_frame.pack(padx=20, pady=20)
+
+# Define and place buttons in the frame using grid layout
+buttons = [
+    ("Create file", Save),
+    ("Create Folder", CreateFolder),
+    ("Open", Open),
+    ("Rename", Rename),
+    ("Copy", Copy),
+    ("Move File", MoveFile),
+    ("Delete File", Delete),
+    ("Delete Folder", DeleteFolder),
+    
+]
+
+for i, (text, command) in enumerate(buttons):
+    button = tk.Button(button_frame, text=text, command=command)
+    button.grid(row=i, column=0, pady=5, padx=10, sticky="ew")
 Screen.mainloop()
