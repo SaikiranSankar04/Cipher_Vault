@@ -435,8 +435,7 @@ def Open():
     b=current_directory+"\\time_access"
     a= a.replace("\\","/")
     b=b.replace("\\","/")
-    print(folder_path)
-    print("B",b)
+    
     if (folder_path==a):
         check_password()
         file_path = filedialog.askopenfilename()
