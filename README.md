@@ -8,7 +8,26 @@ I. Description
 II. Design  
 III. How to install and run the application locally on your device
 
-**I. Design**
+**I. Description**
+
+Modules used:
+FUNCTION                  | MODULES USED
+------------------------------------------
+GUI 	                    | Tkinter, easygui
+File Handling	           | Os, shutil
+Cryptography	           | Twofish
+System Operations	        | Subprocess, psutil
+Time Operations	        | Time, datetime
+Database Connectivity	  | mysql,connector
+Emails	                 | smtplib
+OTP & 2FA	              | pyotp
+
+
+
+
+
+
+**II. Design**
 
 **High level design**
 
