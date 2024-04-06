@@ -10,7 +10,8 @@ III. How to install and run the application locally on your device
 
 **I. Description**
 
-Modules used:
+Modules used:   
+
 FUNCTION                  | MODULES USED
 ------------------------------------------
 GUI 	                    | Tkinter, easygui  
