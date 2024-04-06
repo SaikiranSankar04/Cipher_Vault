@@ -1,6 +1,11 @@
 The safeguarding of sensitive data is becoming more and more important as the digital world changes. 
 In our project **CipherVault**, we implement the TwoFish algorithm in Python to create a secure file management application.
+
+**High level design**
 ![image](https://github.com/SaikiranSankar04/Cipher_Vault/assets/128061632/497f8255-7fc3-45ce-928f-fefcd64a89bd)
+
+**Low level design**
+![image](https://github.com/SaikiranSankar04/Cipher_Vault/assets/128061632/db17c1d0-5b1b-435b-8434-5f3e59e55a75)
 
 File Manager features:
 1. Private folder:
