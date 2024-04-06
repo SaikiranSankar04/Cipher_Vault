@@ -2,8 +2,8 @@ The safeguarding of sensitive data is becoming more and more important as the di
 In our project **CipherVault**, we implement the TwoFish algorithm in Python to create a secure file management application.
 
 **Contents**
-I. Design
-II. Description
+I. Design  
+II. Description  
 III. How to install and run the application locally on your device
 
 **I. Design**
