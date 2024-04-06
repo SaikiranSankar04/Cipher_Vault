@@ -41,15 +41,4 @@ Modules used:
 
 ![image](https://github.com/SaikiranSankar04/Cipher_Vault/assets/128061632/db17c1d0-5b1b-435b-8434-5f3e59e55a75)
 
-File Manager features:
-1. Private folder:
-   verify the password when opening folder
-   create files and folder in this folder
-   to access files in the folder use OTP verification
-2. Time based access:
-   a folder that can be accessed only during the specified time
 
-
-PASSWORD:
-1. PRIVATE FOLDER PASSWORD: to access the
-2. ENCRYPTION PASSWORD: for all files- to save and open, modify...call when you use encrypt
