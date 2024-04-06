@@ -9,7 +9,7 @@ II. Design
 III. How to install and run the application locally on your device
 
 **I. Description**
-
+Python, with its extensive collection of modules makes it an apt choice for our project.
 Modules used:   
 
 |FUNCTION                  | MODULES USED
