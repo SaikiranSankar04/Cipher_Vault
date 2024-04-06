@@ -3,8 +3,9 @@ In our project **CipherVault**, we implement the TwoFish algorithm in Python to 
 
 **Contents**  
 
-I. Design  
-II. Description  
+
+I. Description  
+II. Design  
 III. How to install and run the application locally on your device
 
 **I. Design**
