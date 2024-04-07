@@ -25,8 +25,9 @@ Modules used:
 |Emails	                  | smtplib             |
 |OTP & 2FA	               | pyotp               |
 
-Database used to store passwords: MySQL
-A database **FileExplorer** is created to store static data received upon initialising the application- the Passwords and Access Time.
+Database used to store passwords: MySQL  
+A database **FileExplorer** is created to store static data received upon initialising the application- the Passwords and Access Time.  
+
 
 
 
