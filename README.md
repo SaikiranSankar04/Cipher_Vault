@@ -25,6 +25,9 @@ Modules used:
 |Emails	                  | smtplib             |
 |OTP & 2FA	               | pyotp               |
 
+Database used to store passwords: MySQL
+A database **FileExplorer** is created to store static data received upon initialising the application- the Passwords and Access Time.
+
 
 
 
@@ -43,6 +46,6 @@ Modules used:
 
 
 
-**HOW TO INITIALISE AND RUN THE APPLICATION LOCALLY ON YOUR DEVICE**  
+**III. HOW TO INITIALISE AND RUN THE APPLICATION LOCALLY ON YOUR DEVICE**  
 
 ![image](https://github.com/SaikiranSankar04/Cipher_Vault/assets/128061632/74c31c51-b140-4253-864b-799329af2bd2)
