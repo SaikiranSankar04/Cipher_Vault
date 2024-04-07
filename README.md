@@ -9,6 +9,7 @@ II. Design
 III. How to install and run the application locally on your device
 
 **I. Description**  
+Our project introduces a novel approach by applying the Two Fish encryption algorithm to an entire text file within the file manager. Previous works have primarily focused on utilizing this algorithm for a single string. However, our implementation extends its application to handle text files, allowing for enhanced security and encryption capabilities. This innovative approach enables the efficient and secure encryption of large volumes of text data within the file manager, ensuring the confidentiality and integrity of the information stored.  
 
 Python, with its extensive collection of modules makes it an apt choice for our project.  
 
