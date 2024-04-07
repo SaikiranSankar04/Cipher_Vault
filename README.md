@@ -48,5 +48,8 @@ A database **FileExplorer** is created to store static data received upon initia
 
 
 **III. HOW TO INITIALISE AND RUN THE APPLICATION LOCALLY ON YOUR DEVICE**  
-
+1. Download the CipherVault_Code.py file and run it.
+2. Set up the initial requirements- passwords and access time
+3. You are now ready to use it :)
+   
 ![image](https://github.com/SaikiranSankar04/Cipher_Vault/assets/128061632/74c31c51-b140-4253-864b-799329af2bd2)
