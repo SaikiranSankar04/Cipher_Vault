@@ -33,12 +33,16 @@ Modules used:
 
 **II. Design**
 
-**High level design**
+**Features**
 
 ![image](https://github.com/SaikiranSankar04/Cipher_Vault/assets/128061632/497f8255-7fc3-45ce-928f-fefcd64a89bd)
 
-**Low level design**
+**Types of Authetication**
 
 ![image](https://github.com/SaikiranSankar04/Cipher_Vault/assets/128061632/db17c1d0-5b1b-435b-8434-5f3e59e55a75)
 
 
+
+**HOW TO INITIALISE AND RUN THE APPLICATION LOCALLY ON YOUR DEVICE**  
+
+![image](https://github.com/SaikiranSankar04/Cipher_Vault/assets/128061632/74c31c51-b140-4253-864b-799329af2bd2)
